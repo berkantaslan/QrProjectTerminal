@@ -8,9 +8,6 @@ from PyQt5 import uic
 from PyQt5.QtCore import QTimer, QDateTime
 import sys
 import time
-import cv2
-import pyzbar.pyzbar as pyzbar
-import numpy as np
 import socket
 import json
 from pprint import pprint
@@ -42,17 +39,7 @@ class Main_App(QMainWindow, Ui_MainWindow):
         self.ADDR = (self.IP, self.PORT)
         self.FORMAT = "utf-8"
         self.SIZE = 2048
-        self.error_message1 = 0
-        self.error_message2 = 0
-        self.error_message3 = 0
-        self.error_message4 = 0
-        self.error_message5 = 0
-        self.error_message6 = 0
-        self.error_message7 = 0
         self.t = 0
-        self.hata = 0
-        self.capture = 0
-        self.DISCONNECT_MESSAGE = "!DISCONNECT"
 
     def QrDetector(self):
 
@@ -75,8 +62,8 @@ class Main_App(QMainWindow, Ui_MainWindow):
 
         self.client.send(bytes(json.dumps(self.veri), 'UTF-8'))
 
-        self.pushButton.setEnabled(False)
-        QTimer.singleShot(3000, lambda: self.pushButton.setDisabled(False))
+        # self.pushButton.setEnabled(False)
+        # QTimer.singleShot(3000, lambda: self.pushButton.setDisabled(False))
 
         self.msg = self.client.recv(2048).decode(self.FORMAT)
         self.message= json.loads(self.msg)
@@ -86,7 +73,15 @@ class Main_App(QMainWindow, Ui_MainWindow):
 
         if self.message["durum"] == "Bağlantı kuruldu.":
 
-            threading.Thread(target=self.QrDetectorCam).start()
+            # threading.Thread(target=self.QrDetectorCam).start()
+            self.QrDetectorCam()
+
+        if self.message["durum"] == "Tekrar başlatılıyor.":
+
+            # threading.Thread(target=self.QrDetector).start()
+            self.QrDetector()
+
+            # self.client.close()
 
         # except:
         #     print("Uygun olmayan istek")
@@ -95,34 +90,32 @@ class Main_App(QMainWindow, Ui_MainWindow):
 
         self.t = str(datetime.datetime.now())
 
-        try:
+        # try:
 
-            self.veri = {
+        self.veri = {
 
-            "komut" : "Kamerayı başlat.",
-            "zaman" : self.t,
-            "error" : "Hata yok.",
-            "properties" : "MEPSAN Petrol Cihazları A.Ş. Akıllı Yazar Kasa Projesi için yazılmıştır."
+        "komut" : "Kamerayı başlat.",
+        "zaman" : self.t,
+        "error" : "Hata yok.",
+        "properties" : "MEPSAN Petrol Cihazları A.Ş. Akıllı Yazar Kasa Projesi için yazılmıştır."
 
-            }
+        }
 
-            self.client.send(bytes(json.dumps(self.veri), 'UTF-8'))
+        self.client.send(bytes(json.dumps(self.veri), 'UTF-8'))
 
-            self.msg = self.client.recv(2048).decode(self.FORMAT)
-            pprint(json.loads(self.msg))
-            for key in json.loads(self.msg):
-                pprint(json.loads(self.msg)[key])
+        self.msg = self.client.recv(2048).decode(self.FORMAT)
+        pprint(json.loads(self.msg))
+        for key in json.loads(self.msg):
+            pprint(json.loads(self.msg)[key])
 
-            # if self.pushButton.isChecked():
-            #     # self.QrDetector()
-            # threading.Thread(target=self.QrDetector).start()
-            #
+        # if self.pushButton.isChecked():
+        #     # self.QrDetector()
+        # threading.Thread(target=self.QrDetector).start()
 
-            #
-            # self.client.close()
+        # self.client.close()
 
-        except:
-            print("Uygun olmayan istek2")
+        # except:
+        #     print("Uygun olmayan istek2")
 
     def QrDetectorWrite(self):
 

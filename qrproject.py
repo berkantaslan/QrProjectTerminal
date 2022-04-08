@@ -13,7 +13,6 @@ import multiprocessing
 import datetime
 from matplotlib import pyplot as plt
 from PIL import Image
-import time
 import os
 
 class QrDetectorSystem:
@@ -27,19 +26,10 @@ class QrDetectorSystem:
         self.ADDR = (self.IP, self.PORT)
         self.FORMAT = "utf-8"
         self.SIZE = 2048
-        self.error_message1 = 0
-        self.error_message2 = 0
-        self.error_message3 = 0
-        self.error_message4 = 0
-        self.error_message5 = 0
-        self.error_message6 = 0
-        self.error_message7 = 0
         self.t = 0
-        self.hata = 0
-        self.capture = 0
-        self.DISCONNECT_MESSAGE = "!DISCONNECT"
-        self.a = 0
         self.liste = list()
+        self.a = 0
+        self.b = 0
 
     def Start_Webcam(self):
 
@@ -266,6 +256,133 @@ class QrDetectorSystem:
 
         try:
 
+            if self.b == 1:
+
+                self.server.listen()
+                print(f"[LISTENING] Server is listening on {self.ADDR}")
+                self.conn, self.ADDR = self.server.accept()
+
+                self.t = str(datetime.datetime.now())
+
+                while True:
+
+                    if self.a == 0:
+                        try:
+
+                            self.a = 1
+
+                            self.msg = self.conn.recv(2048).decode(self.FORMAT)
+                            self.message= json.loads(self.msg)
+                            pprint(json.loads(self.msg))
+                            for key in json.loads(self.msg):
+                                pprint(json.loads(self.msg)[key])
+
+                            if self.message["komut"] == "Bağlantı kur.":
+
+                                self.veri = {
+
+                                "durum" : "Bağlantı kuruldu.",
+                                "zaman" : self.t,
+                                "error" : "Hata: Program kapatıldı",
+                                "properties" : "MEPSAN Petrol Cihazları A.Ş. Akıllı Yazar Kasa Projesi için yazılmıştır."
+
+                                }
+
+                                self.conn.send(bytes(json.dumps(self.veri), 'UTF-8'))
+
+                        except:
+                            self.Send_Error(4)
+
+                    if self.a == 1:
+                        try:
+
+                            self.capture = cv2.VideoCapture(0)
+                            time.sleep(1)
+
+                            if not self.capture.isOpened():
+                                self.Send_Error(3)
+
+                            if self.capture.isOpened():
+                                self.capture.release()
+                                self.a = 2
+
+                                self.msg = self.conn.recv(2048).decode(self.FORMAT)
+                                self.message= json.loads(self.msg)
+                                pprint(json.loads(self.msg))
+                                for key in json.loads(self.msg):
+                                    pprint(json.loads(self.msg)[key])
+
+                                if self.message["komut"] == "Kamerayı başlat.":
+
+                                    self.veri = {
+
+                                    "durum" : "Kamera başlatıldı.",
+                                    "zaman" : self.t,
+                                    "error" : "Hata: Program kapatıldı",
+                                    "properties" : "MEPSAN Petrol Cihazları A.Ş. Akıllı Yazar Kasa Projesi için yazılmıştır."
+
+                                    }
+
+                                    self.conn.send(bytes(json.dumps(self.veri), 'UTF-8'))
+
+                                    threading.Thread(target=self.Start_Webcam).start()
+
+                        except:
+                            self.Send_Error(4)
+
+                    if self.a == 2:
+                        try:
+
+                            self.server.listen()
+
+                            self.conn, self.ADDR = self.server.accept()
+
+                            while True:
+
+                                self.msg = self.conn.recv(2048).decode(self.FORMAT)
+                                self.message= json.loads(self.msg)
+                                pprint(json.loads(self.msg))
+                                for key in json.loads(self.msg):
+                                    pprint(json.loads(self.msg)[key])
+
+                                if self.message["komut"] == "Okudun mu?":
+
+                                    threading.Thread(target=self.Send_Message).start()
+
+                                    self.server.close()
+
+                                if self.message["komut"] == "Bağlantı kur.":
+
+                                    self.capture.release()
+
+                                    self.veri = {
+
+                                    "durum" : "Tekrar başlatılıyor.",
+                                    "zaman" : self.t,
+                                    "error" : "Hata: Program kapatıldı",
+                                    "properties" : "MEPSAN Petrol Cihazları A.Ş. Akıllı Yazar Kasa Projesi için yazılmıştır."
+
+                                    }
+
+                                    self.a = 0
+
+                                    self.b = 0
+
+                                    self.conn.send(bytes(json.dumps(self.veri), 'UTF-8'))
+
+                                    threading.Thread(target=self.Server_Ol).start()
+
+                                    # self.Server_Ol()
+                                    #
+                                    # threading.Thread(target=self.Send_Message).start()
+
+                                    # os.execl(sys.executable, sys.executable, *sys.argv)
+
+                                    self.server.close()
+
+                        except:
+                            self.Send_Error(4)
+
             self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
@@ -371,11 +488,28 @@ class QrDetectorSystem:
 
                                 self.capture.release()
 
+                                self.veri = {
+
+                                "durum" : "Tekrar başlatılıyor.",
+                                "zaman" : self.t,
+                                "error" : "Hata: Program kapatıldı",
+                                "properties" : "MEPSAN Petrol Cihazları A.Ş. Akıllı Yazar Kasa Projesi için yazılmıştır."
+
+                                }
+
+                                self.a = 0
+
+                                self.b = 1
+
+                                self.conn.send(bytes(json.dumps(self.veri), 'UTF-8'))
+
                                 threading.Thread(target=self.Server_Ol).start()
 
-                                threading.Thread(target=self.Send_Message).start()
+                                # self.Server_Ol()
+                                #
+                                # threading.Thread(target=self.Send_Message).start()
 
-                                os.execl(sys.executable, sys.executable, *sys.argv)
+                                # os.execl(sys.executable, sys.executable, *sys.argv)
 
                                 self.server.close()
 
