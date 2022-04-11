@@ -155,7 +155,7 @@ class Main_App(QMainWindow, Ui_MainWindow):
 
             os.execl(sys.executable, sys.executable, *sys.argv)
 
-            self.client.close()
+            #self.client.close()
 
         except:
             print("Uygun olmayan istek4")
