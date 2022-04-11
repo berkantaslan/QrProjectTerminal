@@ -126,36 +126,36 @@ class Main_App(QMainWindow, Ui_MainWindow):
 
         self.client.connect(self.ADDR)
 
-        # try:
-        self.veri = {
+        try:
+            self.veri = {
 
-        "komut" : "Okudun mu?",
-        "zaman" : self.t,
-        "error" : "Hata yok.",
-        "properties" : "MEPSAN Petrol Cihazları A.Ş. Akıllı Yazar Kasa Projesi için yazılmıştır."
+            "komut" : "Okudun mu?",
+            "zaman" : self.t,
+            "error" : "Hata yok.",
+            "properties" : "MEPSAN Petrol Cihazları A.Ş. Akıllı Yazar Kasa Projesi için yazılmıştır."
 
-        }
+            }
 
-        self.client.send(bytes(json.dumps(self.veri), 'UTF-8'))
+            self.client.send(bytes(json.dumps(self.veri), 'UTF-8'))
 
-        # self.QrDetectorWant()
-        threading.Thread(target=self.QrDetectorWant).start()
+            self.QrDetectorWant()
+            #threading.Thread(target=self.QrDetectorWant).start()
 
-        # except:
-        #     print("Uygun olmayan istek3")
+        except:
+            print("Uygun olmayan istek3")
 
     def QrDetectorWant(self):
 
         try:
-            while True:
-                self.msg = self.client.recv(2048).decode(self.FORMAT)
-                pprint(json.loads(self.msg))
-                for key in json.loads(self.msg):
-                    pprint(json.loads(self.msg)[key])
+            #while True:
+            self.msg = self.client.recv(2048).decode(self.FORMAT)
+            pprint(json.loads(self.msg))
+            for key in json.loads(self.msg):
+                pprint(json.loads(self.msg)[key])
 
-                os.execl(sys.executable, sys.executable, *sys.argv)
+            os.execl(sys.executable, sys.executable, *sys.argv)
 
-                self.client.close()
+            self.client.close()
 
         except:
             print("Uygun olmayan istek4")
