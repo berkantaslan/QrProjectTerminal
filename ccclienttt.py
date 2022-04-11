@@ -32,9 +32,9 @@ class Main_App(QMainWindow, Ui_MainWindow):
         self.pushButton_2.clicked.connect(self.QrDetectorWrite)
         self.actionProgram_Hakk_nda.triggered.connect(self.Hakkinda_Message)
         self.action_k.triggered.connect(self.Cikis)
-        #self.IP = socket.gethostbyname(socket.gethostname())
+        self.IP = socket.gethostbyname(socket.gethostname())
         #self.IP = "192.168.102.201"
-        self.IP = "192.168.100.168"
+        #self.IP = "192.168.100.168"
         self.PORT = 4455
         self.ADDR = (self.IP, self.PORT)
         self.FORMAT = "utf-8"

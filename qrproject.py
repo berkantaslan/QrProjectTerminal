@@ -35,7 +35,7 @@ class QrDetectorSystem:
 
         # self.capture = cv2.VideoCapture('rtsp://192.168.102.77:554/ch01_sub.264')
         self.capture = cv2.VideoCapture(0)
-        time.sleep(1)
+        #time.sleep(1)
 
         if not self.capture.isOpened():
             self.Send_Error(3)
@@ -123,7 +123,7 @@ class QrDetectorSystem:
         try:
 
             self.capture = cv2.VideoCapture(0)
-            time.sleep(1)
+            #time.sleep(1)
 
             if not self.capture.isOpened():
                 self.Send_Error(3)
@@ -259,7 +259,6 @@ class QrDetectorSystem:
             if self.b == 1:
 
                 self.server.listen()
-                print(f"[LISTENING] Server is listening on {self.ADDR}")
                 self.conn, self.ADDR = self.server.accept()
 
                 self.t = str(datetime.datetime.now())
@@ -297,7 +296,7 @@ class QrDetectorSystem:
                         try:
 
                             self.capture = cv2.VideoCapture(0)
-                            time.sleep(1)
+                            #time.sleep(1)
 
                             if not self.capture.isOpened():
                                 self.Send_Error(3)
@@ -372,7 +371,7 @@ class QrDetectorSystem:
 
                                     threading.Thread(target=self.Server_Ol).start()
 
-                                    # self.Server_Ol()
+                                    #self.Server_Ol()
                                     #
                                     # threading.Thread(target=self.Send_Message).start()
 
@@ -430,7 +429,7 @@ class QrDetectorSystem:
                     try:
 
                         self.capture = cv2.VideoCapture(0)
-                        time.sleep(1)
+                        #time.sleep(1)
 
                         if not self.capture.isOpened():
                             self.Send_Error(3)
@@ -505,7 +504,7 @@ class QrDetectorSystem:
 
                                 threading.Thread(target=self.Server_Ol).start()
 
-                                # self.Server_Ol()
+                                #self.Server_Ol()
                                 #
                                 # threading.Thread(target=self.Send_Message).start()
 
