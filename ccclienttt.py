@@ -1,3 +1,4 @@
+from __future__ import print_function
 from mainWinClient import Ui_MainWindow
 import addMessage
 from PyQt5.QtWidgets import *
@@ -24,6 +25,14 @@ class Main_App(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(Main_App, self).__init__(parent)
         self.Init_Ui()
+        self.IP = socket.gethostbyname(socket.gethostname())
+        #self.IP = "192.168.102.201"
+        #self.IP = "192.168.100.168"
+        self.PORT = 3456
+        self.ADDR = (self.IP, self.PORT)
+        self.FORMAT = "utf-8"
+        self.SIZE = 3096
+        self.t = 0
 
     def Init_Ui(self):
         self.setupUi(self)
@@ -32,20 +41,12 @@ class Main_App(QMainWindow, Ui_MainWindow):
         self.pushButton_2.clicked.connect(self.QrDetectorWrite)
         self.actionProgram_Hakk_nda.triggered.connect(self.Hakkinda_Message)
         self.action_k.triggered.connect(self.Cikis)
-        self.IP = socket.gethostbyname(socket.gethostname())
-        #self.IP = "192.168.102.201"
-        #self.IP = "192.168.100.168"
-        self.PORT = 4455
-        self.ADDR = (self.IP, self.PORT)
-        self.FORMAT = "utf-8"
-        self.SIZE = 2048
-        self.t = 0
 
     def QrDetector(self):
 
         self.t = str(datetime.datetime.now())
 
-        # try:
+        #try:
         self.veri = {
 
         "komut" : "Bağlantı kur.",
@@ -62,35 +63,45 @@ class Main_App(QMainWindow, Ui_MainWindow):
 
         self.client.send(bytes(json.dumps(self.veri), 'UTF-8'))
 
-        # self.pushButton.setEnabled(False)
-        # QTimer.singleShot(3000, lambda: self.pushButton.setDisabled(False))
+        #self.pushButton.setEnabled(False)
+        #QTimer.singleShot(3000, lambda: self.pushButton.setDisabled(False))
 
-        self.msg = self.client.recv(2048).decode(self.FORMAT)
+        self.msg = self.client.recv(3096).decode(self.FORMAT)
         self.message= json.loads(self.msg)
         pprint(json.loads(self.msg))
-        for key in json.loads(self.msg):
-            pprint(json.loads(self.msg)[key])
+        # for key in json.loads(self.msg):
+        #     pprint(json.loads(self.msg)[key])
 
         if self.message["durum"] == "Bağlantı kuruldu.":
 
-            # threading.Thread(target=self.QrDetectorCam).start()
+            #threading.Thread(target=self.QrDetectorCam).start()
             self.QrDetectorCam()
+
+            #os.execl(sys.executable, sys.executable, *sys.argv)
+
+            #self.client.close()
 
         if self.message["durum"] == "Tekrar başlatılıyor.":
 
-            # threading.Thread(target=self.QrDetector).start()
+            #threading.Thread(target=self.QrDetector).start()
+
             self.QrDetector()
 
-            # self.client.close()
+            #os.execl(sys.executable, sys.executable, *sys.argv)
 
-        # except:
-        #     print("Uygun olmayan istek")
+            #self.client.close()
+
+        #except:
+        #    print("Uygun olmayan istek")
 
     def QrDetectorCam(self):
 
         self.t = str(datetime.datetime.now())
 
-        # try:
+        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+        self.client.connect(self.ADDR)
 
         self.veri = {
 
@@ -103,16 +114,18 @@ class Main_App(QMainWindow, Ui_MainWindow):
 
         self.client.send(bytes(json.dumps(self.veri), 'UTF-8'))
 
-        self.msg = self.client.recv(2048).decode(self.FORMAT)
+        self.msg = self.client.recv(3096).decode(self.FORMAT)
         pprint(json.loads(self.msg))
-        for key in json.loads(self.msg):
-            pprint(json.loads(self.msg)[key])
+        # for key in json.loads(self.msg):
+        #     pprint(json.loads(self.msg)[key])
 
         # if self.pushButton.isChecked():
         #     # self.QrDetector()
         # threading.Thread(target=self.QrDetector).start()
 
-        # self.client.close()
+        #os.execl(sys.executable, sys.executable, *sys.argv)
+
+        #self.client.close()
 
         # except:
         #     print("Uygun olmayan istek2")
@@ -121,12 +134,13 @@ class Main_App(QMainWindow, Ui_MainWindow):
 
         self.t = str(datetime.datetime.now())
 
-        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-        self.client.connect(self.ADDR)
-
         try:
+
+            self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+            self.client.connect(self.ADDR)
+
             self.veri = {
 
             "komut" : "Okudun mu?",
@@ -147,15 +161,17 @@ class Main_App(QMainWindow, Ui_MainWindow):
     def QrDetectorWant(self):
 
         try:
-            #while True:
-            self.msg = self.client.recv(2048).decode(self.FORMAT)
+
+            # while True:
+
+            self.msg = self.client.recv(3096).decode(self.FORMAT)
             pprint(json.loads(self.msg))
-            for key in json.loads(self.msg):
-                pprint(json.loads(self.msg)[key])
+            # for key in json.loads(self.msg):
+            #     pprint(json.loads(self.msg)[key])
 
-            os.execl(sys.executable, sys.executable, *sys.argv)
+            self.client.close()
 
-            #self.client.close()
+            #os.execl(sys.executable, sys.executable, *sys.argv)
 
         except:
             print("Uygun olmayan istek4")
