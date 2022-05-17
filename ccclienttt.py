@@ -79,7 +79,7 @@ class Main_App(QMainWindow, Ui_MainWindow):
 
             #os.execl(sys.executable, sys.executable, *sys.argv)
 
-            #self.client.close()
+            self.client.close()
 
         if self.message["durum"] == "Tekrar başlatılıyor.":
 
@@ -89,7 +89,7 @@ class Main_App(QMainWindow, Ui_MainWindow):
 
             #os.execl(sys.executable, sys.executable, *sys.argv)
 
-            #self.client.close()
+            self.client.close()
 
         #except:
         #    print("Uygun olmayan istek")
@@ -115,7 +115,11 @@ class Main_App(QMainWindow, Ui_MainWindow):
         self.client.send(bytes(json.dumps(self.veri), 'UTF-8'))
 
         self.msg = self.client.recv(3096).decode(self.FORMAT)
+        self.message= json.loads(self.msg)
         pprint(json.loads(self.msg))
+        # for key in json.loads(self.msg):
+        #     pprint(json.loads(self.msg)[key])
+
         # for key in json.loads(self.msg):
         #     pprint(json.loads(self.msg)[key])
 
@@ -171,7 +175,7 @@ class Main_App(QMainWindow, Ui_MainWindow):
             # for key in json.loads(self.msg):
             #     pprint(json.loads(self.msg)[key])
 
-            #self.client.close()
+            self.client.close()
 
             #os.execl(sys.executable, sys.executable, *sys.argv)
 

@@ -72,7 +72,6 @@ class QrDetectorSystem:
                     self.image = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
 
                     self.decodedObjects = self.decode(self.image)
-                    # self.decodedObjects = threating.Thread(target=self.decode, args=(self.image)).start()
 
                     for self.decodedObject in self.decodedObjects:
 
@@ -125,10 +124,6 @@ class QrDetectorSystem:
 
     def Send_Message(self):
 
-        #self.server.listen()
-
-        #self.conn, self.ADDR = self.server.accept()
-
         self.t = str(datetime.datetime.now())
 
         try:
@@ -140,6 +135,7 @@ class QrDetectorSystem:
             #self.capture = cv2.VideoCapture("/dev/video1", cv2.CAP_V4L)
 
             if self.capture.isOpened() != True:
+
                self.Send_Error(3)
 
             else:
@@ -161,10 +157,6 @@ class QrDetectorSystem:
 
                     self.liste.pop(0)
 
-                    #self.server.close()
-
-                    #os.execl(sys.executable, sys.executable, *sys.argv)
-
                 else:
 
                     self.veri = {
@@ -178,18 +170,10 @@ class QrDetectorSystem:
 
                     self.conn.send(bytes(json.dumps(self.veri), 'UTF-8'))
 
-                    #self.server.close()
-
-                    #os.execl(sys.executable, sys.executable, *sys.argv)
-
         except:
             self.Send_Error(4)
 
     def Send_Error(self, window):
-
-        #self.server.listen()
-
-        #self.conn, self.ADDR = self.server.accept()
 
         self.capture.release()
 
@@ -200,7 +184,7 @@ class QrDetectorSystem:
             if window == 2:
 
                 try:
-                    #print("Webcam bağlı değil ya da Kamera arızalı, ya da Ağ bağlantısı kurulamadı.")
+                    #print("Hata: Ağ Bağlantısı yapmadan bu istek uygun değildir. Ağ Bağlantısı sağladıktan sonra tekrar deneyiniz.")
                     self.veri = {
 
                     "durum" : "Ağ Bağlantısı Hatası",
@@ -212,17 +196,19 @@ class QrDetectorSystem:
 
                     self.conn.send(bytes(json.dumps(self.veri), 'UTF-8'))
 
-                    # self.server.close()
-                    #os.execl(sys.executable, sys.executable, *sys.argv)
+                    self.a = 0
+
+                    self.b = 1
+
+                    self.Server_Ol()
 
                 except:
                     self.Send_Error(11)
 
-
             if window == 3:
 
                 try:
-                    #print("Webcam bağlı değil ya da Kamera arızalı, ya da Ağ bağlantısı kurulamadı.")
+                    #print("Hata: Webcam bağlı değil ya da Kamera arızalı")
                     self.veri = {
 
                     "durum" : "Qr Kodu tespit edilemedi.",
@@ -234,8 +220,11 @@ class QrDetectorSystem:
 
                     self.conn.send(bytes(json.dumps(self.veri), 'UTF-8'))
 
-                    # self.server.close()
-                    #os.execl(sys.executable, sys.executable, *sys.argv)
+                    self.a = 0
+
+                    self.b = 1
+
+                    self.Server_Ol()
 
                 except:
                     self.Send_Error(11)
@@ -243,7 +232,7 @@ class QrDetectorSystem:
             if window == 4:
 
                 try:
-                    #print("Webcam bağlı değil ya da Kamera arızalı, ya da Ağ bağlantısı kurulamadı.")
+                    #print("Hata: Ağ bağlantısı kurulamadı.")
                     self.veri = {
 
                     "durum" : "Qr Kodu tespit edilemedi.",
@@ -255,8 +244,11 @@ class QrDetectorSystem:
 
                     self.conn.send(bytes(json.dumps(self.veri), 'UTF-8'))
 
-                    # self.server.close()
-                    #os.execl(sys.executable, sys.executable, *sys.argv)
+                    self.a = 0
+
+                    self.b = 1
+
+                    self.Server_Ol()
 
                 except:
                     self.Send_Error(11)
@@ -264,7 +256,7 @@ class QrDetectorSystem:
             if window == 10:
 
                 try:
-                    #print("Program kapatıldı.")
+                    #print("Hata: Program kapatıldı.")
                     self.veri = {
 
                     "durum" : "Qr Kodu tespit edilemedi.",
@@ -276,15 +268,19 @@ class QrDetectorSystem:
 
                     self.conn.send(bytes(json.dumps(self.veri), 'UTF-8'))
 
-                    # self.server.close()
-                    #os.execl(sys.executable, sys.executable, *sys.argv)
+                    self.a = 0
+
+                    self.b = 1
+
+                    self.Server_Ol()
 
                 except:
                     self.Send_Error(11)
 
             if window == 11:
 
-                #print("Program kapatıldı.")
+                #print("Hata: JSON gönderim hatası ile karşılaşıldı.")
+
                 self.veri = {
 
                 "durum" : "Qr Kodu tespit edilemedi.",
@@ -296,8 +292,11 @@ class QrDetectorSystem:
 
                 self.conn.send(bytes(json.dumps(self.veri), 'UTF-8'))
 
-                # self.server.close()
-                #os.execl(sys.executable, sys.executable, *sys.argv)
+                self.a = 0
+
+                self.b = 1
+
+                self.Server_Ol()
 
             else:
                 self.Send_Error(4)
@@ -541,11 +540,15 @@ class QrDetectorSystem:
 
                         if self.message["komut"] == "Okudun mu?":
 
-                            #self.capture.release()
+                            #print("Webcam bağlı değil ya da Kamera arızalı, ya da Ağ bağlantısı kurulamadı.")
+                            self.veri = {
 
-                            threading.Thread(target=self.Send_Error(2)).start()
+                            "durum" : "Ağ Bağlantısı Hatası",
+                            "zaman" : self.t,
+                            "error" : "Hata: Ağ Bağlantısı yapmadan bu istek uygun değildir. Ağ Bağlantısı sağladıktan sonra tekrar deneyiniz.",
+                            "properties" : "MEPSAN Petrol Cihazları A.Ş. Akıllı Yazar Kasa Projesi için yazılmıştır."
 
-                            #self.server.close()
+                            }
 
                             self.a = 0
 
