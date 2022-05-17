@@ -165,11 +165,13 @@ class Main_App(QMainWindow, Ui_MainWindow):
             # while True:
 
             self.msg = self.client.recv(3096).decode(self.FORMAT)
+            self.message= json.loads(self.msg)
             pprint(json.loads(self.msg))
+
             # for key in json.loads(self.msg):
             #     pprint(json.loads(self.msg)[key])
 
-            self.client.close()
+            #self.client.close()
 
             #os.execl(sys.executable, sys.executable, *sys.argv)
 

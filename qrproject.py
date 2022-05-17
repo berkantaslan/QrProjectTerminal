@@ -197,13 +197,35 @@ class QrDetectorSystem:
 
             self.t = str(datetime.datetime.now())
 
+            if window == 2:
+
+                try:
+                    #print("Webcam bağlı değil ya da Kamera arızalı, ya da Ağ bağlantısı kurulamadı.")
+                    self.veri = {
+
+                    "durum" : "Ağ Bağlantısı Hatası",
+                    "zaman" : self.t,
+                    "error" : "Hata: Ağ Bağlantısı yapmadan bu istek uygun değildir. Ağ Bağlantısı sağladıktan sonra tekrar deneyiniz.",
+                    "properties" : "MEPSAN Petrol Cihazları A.Ş. Akıllı Yazar Kasa Projesi için yazılmıştır."
+
+                    }
+
+                    self.conn.send(bytes(json.dumps(self.veri), 'UTF-8'))
+
+                    # self.server.close()
+                    #os.execl(sys.executable, sys.executable, *sys.argv)
+
+                except:
+                    self.Send_Error(11)
+
+
             if window == 3:
 
                 try:
                     #print("Webcam bağlı değil ya da Kamera arızalı, ya da Ağ bağlantısı kurulamadı.")
                     self.veri = {
 
-                    "detectedQr" : "Qr Kodu tespit edilemedi.",
+                    "durum" : "Qr Kodu tespit edilemedi.",
                     "zaman" : self.t,
                     "error" : "Hata: Webcam bağlı değil ya da Kamera arızalı",
                     "properties" : "MEPSAN Petrol Cihazları A.Ş. Akıllı Yazar Kasa Projesi için yazılmıştır."
@@ -224,7 +246,7 @@ class QrDetectorSystem:
                     #print("Webcam bağlı değil ya da Kamera arızalı, ya da Ağ bağlantısı kurulamadı.")
                     self.veri = {
 
-                    "detectedQr" : "Qr Kodu tespit edilemedi.",
+                    "durum" : "Qr Kodu tespit edilemedi.",
                     "zaman" : self.t,
                     "error" : "Hata: Ağ bağlantısı kurulamadı.",
                     "properties" : "MEPSAN Petrol Cihazları A.Ş. Akıllı Yazar Kasa Projesi için yazılmıştır."
@@ -245,7 +267,7 @@ class QrDetectorSystem:
                     #print("Program kapatıldı.")
                     self.veri = {
 
-                    "detectedQr" : "Qr Kodu tespit edilemedi.",
+                    "durum" : "Qr Kodu tespit edilemedi.",
                     "zaman" : self.t,
                     "error" : "Hata: Program kapatıldı.",
                     "properties" : "MEPSAN Petrol Cihazları A.Ş. Akıllı Yazar Kasa Projesi için yazılmıştır."
@@ -265,7 +287,7 @@ class QrDetectorSystem:
                 #print("Program kapatıldı.")
                 self.veri = {
 
-                "detectedQr" : "Qr Kodu tespit edilemedi.",
+                "durum" : "Qr Kodu tespit edilemedi.",
                 "zaman" : self.t,
                 "error" : "Hata: JSON gönderim hatası ile karşılaşıldı.",
                 "properties" : "MEPSAN Petrol Cihazları A.Ş. Akıllı Yazar Kasa Projesi için yazılmıştır."
@@ -295,9 +317,13 @@ class QrDetectorSystem:
 
                 self.conn, self.ADDR = self.server.accept()
 
+                # if self.capture.isOpened():
+                #
+                #     self.capture.release()
+
                 if self.a == 0:
 
-                    #self.capture.release()
+                    self.capture.release()
 
                     # try:
 
@@ -308,6 +334,29 @@ class QrDetectorSystem:
                     pprint(json.loads(self.msg))
                     #for key in json.loads(self.msg):
                         #pprint(json.loads(self.msg)[key])
+
+                    if self.message["komut"] == "Okudun mu?":
+
+                        #print("Webcam bağlı değil ya da Kamera arızalı, ya da Ağ bağlantısı kurulamadı.")
+                        self.veri = {
+
+                        "durum" : "Ağ Bağlantısı Hatası",
+                        "zaman" : self.t,
+                        "error" : "Hata: Ağ Bağlantısı yapmadan bu istek uygun değildir. Ağ Bağlantısı sağladıktan sonra tekrar deneyiniz.",
+                        "properties" : "MEPSAN Petrol Cihazları A.Ş. Akıllı Yazar Kasa Projesi için yazılmıştır."
+
+                        }
+
+                        self.conn.send(bytes(json.dumps(self.veri), 'UTF-8'))
+
+                        self.a = 0
+
+                        self.b = 1
+
+                        self.Server_Ol()
+
+                        # self.server.close()
+                        #os.execl(sys.executable, sys.executable, *sys.argv)
 
                     if self.message["komut"] == "Bağlantı kur.":
 
@@ -334,7 +383,7 @@ class QrDetectorSystem:
 
                 if self.a == 1:
 
-                    #self.capture.release()
+                    self.capture.release()
 
                     try:
 
@@ -380,87 +429,87 @@ class QrDetectorSystem:
                                 #
                                 # self.Server_Ol()
 
-                            else:
-                                self.Send_Error(4)
+                            # else:
+                            #     self.Send_Error(4)
 
                     except:
                         self.Send_Error(4)
 
                 if self.a == 2:
 
-                    try:
+                    # try:
 
-                        self.server.listen()
+                    self.server.listen()
 
-                        self.conn, self.ADDR = self.server.accept()
+                    self.conn, self.ADDR = self.server.accept()
 
-                        #self.capture = cv2.VideoCapture(0)
-                        #self.capture = cv2.VideoCapture("/dev/video0", cv2.CAP_V4L)
+                    #self.capture = cv2.VideoCapture(0)
+                    #self.capture = cv2.VideoCapture("/dev/video0", cv2.CAP_V4L)
 
-                        # if not self.capture.isOpened():
-                        #     self.Send_Error(3)
-                        #
-                        # else:
+                    # if not self.capture.isOpened():
+                    #     self.Send_Error(3)
+                    #
+                    # else:
 
-                            # while True:
+                        # while True:
 
-                        self.msg = self.conn.recv(3096).decode(self.FORMAT)
-                        self.message= json.loads(self.msg)
-                        pprint(json.loads(self.msg))
-                        #for key in json.loads(self.msg):
-                            #pprint(json.loads(self.msg)[key])
+                    self.msg = self.conn.recv(3096).decode(self.FORMAT)
+                    self.message= json.loads(self.msg)
+                    pprint(json.loads(self.msg))
+                    #for key in json.loads(self.msg):
+                        #pprint(json.loads(self.msg)[key])
 
-                        self.capture.release()
+                    self.capture.release()
 
-                        if self.message["komut"] == "Okudun mu?":
+                    if self.message["komut"] == "Okudun mu?":
 
-                            #self.capture.release()
+                        #self.capture.release()
 
-                            threading.Thread(target=self.Send_Message).start()
+                        threading.Thread(target=self.Send_Message).start()
 
-                            #self.server.close()
+                        #self.server.close()
 
-                            self.a = 0
+                        self.a = 0
 
-                            self.b = 1
+                        self.b = 1
 
-                            self.Server_Ol()
+                        self.Server_Ol()
 
-                        if self.message["komut"] == "Bağlantı kur.":
+                    if self.message["komut"] == "Bağlantı kur.":
 
-                            #self.capture.release()
+                        #self.capture.release()
 
-                            self.veri = {
+                        self.veri = {
 
-                            "durum" : "Tekrar başlatılıyor.",
-                            "zaman" : self.t,
-                            "error" : "Hata yok.",
-                            "properties" : "MEPSAN Petrol Cihazları A.Ş. Akıllı Yazar Kasa Projesi için yazılmıştır."
+                        "durum" : "Tekrar başlatılıyor.",
+                        "zaman" : self.t,
+                        "error" : "Hata yok.",
+                        "properties" : "MEPSAN Petrol Cihazları A.Ş. Akıllı Yazar Kasa Projesi için yazılmıştır."
 
-                            }
+                        }
 
-                            self.conn.send(bytes(json.dumps(self.veri), 'UTF-8'))
+                        self.conn.send(bytes(json.dumps(self.veri), 'UTF-8'))
 
-                            #threading.Thread(target=self.Server_Ol).start()
+                        #threading.Thread(target=self.Server_Ol).start()
 
 
-                            self.a = 0
+                        self.a = 0
 
-                            self.b = 1
+                        self.b = 1
 
-                            self.Server_Ol()
+                        self.Server_Ol()
 
-                            # threading.Thread(target=self.Send_Message).start()
+                        # threading.Thread(target=self.Send_Message).start()
 
-                            #os.execl(sys.executable, sys.executable, *sys.argv)
+                        #os.execl(sys.executable, sys.executable, *sys.argv)
 
-                            #self.server.close()
+                        #self.server.close()
 
-                    except:
-                        self.Send_Error(4)
+                    # except:
+                    #     self.Send_Error(4)
 
-                else:
-                    self.Send_Error(4)
+                # else:
+                #     self.Send_Error(4)
 
             if self.b == 0:
 
@@ -489,6 +538,20 @@ class QrDetectorSystem:
                         pprint(json.loads(self.msg))
                         #for key in json.loads(self.msg):
                             #pprint(json.loads(self.msg)[key])
+
+                        if self.message["komut"] == "Okudun mu?":
+
+                            #self.capture.release()
+
+                            threading.Thread(target=self.Send_Error(2)).start()
+
+                            #self.server.close()
+
+                            self.a = 0
+
+                            self.b = 1
+
+                            self.Server_Ol()
 
                         if self.message["komut"] == "Bağlantı kur.":
 
@@ -551,6 +614,7 @@ class QrDetectorSystem:
                         #self.capture = cv2.VideoCapture("/dev/video0", cv2.CAP_V4L)
 
                         if not self.capture.isOpened():
+
                             self.Send_Error(3)
 
                         else:
